@@ -1,18 +1,22 @@
-require 'spec_helper'
+# frozen_string_literal: true
 
 describe Twitch::Chat::Client do
-  let(:client) { Twitch::Chat::Client.new(password: 'password', nickname: 'enotpoloskun') }
+  let(:client) do
+    Twitch::Chat::Client.new(password: 'password', nickname: 'enotpoloskun')
+  end
 
   describe '#on' do
     context 'There is one message callback' do
+      subject { client.instance_variable_get(:@callbacks)[:message].count }
+
       before { client.on(:message) { 'callback1' } }
 
-      it { client.callbacks[:message].count.should eq 1 }
+      it { is_expected.to eq 1 }
 
-      context "There is another message callback" do
+      context 'There is another message callback' do
         before { client.on(:message) { 'callback2' } }
 
-        it { client.callbacks[:message].count.should eq 2 }
+        it { is_expected.to eq 2 }
       end
     end
   end
@@ -20,7 +24,7 @@ describe Twitch::Chat::Client do
   describe '#trigger' do
     before { client.on(:message) { client.inspect } }
 
-    it { client.should_receive(:inspect) }
+    it { expect(client).to receive(:inspect) }
 
     after { client.trigger(:message) }
   end
