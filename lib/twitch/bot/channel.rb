@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Twitch
-  module Chat
+  module Bot
+    # Twitch channel management
     class Channel
       attr_reader :name, :moderators
 
