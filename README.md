@@ -4,6 +4,8 @@
 
 This gem is based on the `twitch-chat` gem by https://github.com/EnotPoloskun.
 
+_As of April 2020, this gem is under heavy development. I've created it to develop my own Twitch chat bot and will add more functionality. Feel free to add issues with suggestions and feature requests!_
+
 ## Installation
 
 Add this line to your application's `Gemfile`:
