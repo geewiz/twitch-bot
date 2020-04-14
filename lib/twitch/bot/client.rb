@@ -140,8 +140,8 @@ module Twitch
         log_data = data.gsub(/(PASS oauth:)(\w+)/) do
           "#{Regexp.last_match(1)}#{'*' * Regexp.last_match(2).size}"
         end
+        logger.debug "< #{log_data}"
 
-        logger.info "< #{log_data}"
         socket.puts(data)
       end
 
@@ -186,7 +186,7 @@ module Twitch
         @input_thread = Thread.start do
           while running
             line = read_socket
-            logger.info "> #{line}"
+            logger.debug "> #{line}"
             irc_message = IrcMessage.new(line)
             trigger(Twitch::Bot::MessageParser.new(irc_message).message)
           end
