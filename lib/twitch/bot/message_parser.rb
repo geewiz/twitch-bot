@@ -54,14 +54,16 @@ module Twitch
     # Parses a PRIVMSG IRC command
     class PrivMsgCommandParser < CommandParser
       def call
-        if message.user == "twitchnotify"
-          if message.text.match?(/just subscribed!/)
+        user = message.user
+        text = message.text
+        if user == "twitchnotify"
+          if text.match?(/just subscribed!/)
             SubscriptionMessage.new(message)
           else
             NotSupportedMessage.new(message)
           end
         else
-          ChatMessageMessage.new(message)
+          ChatMessageMessage.new(text: text, user: user)
         end
       end
     end

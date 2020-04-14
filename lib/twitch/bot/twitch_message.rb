@@ -76,9 +76,9 @@ module Twitch
     class ChatMessageMessage < TwitchMessage
       attr_reader :text, :user
 
-      def initialize(message)
-        @text = message.text
-        @user = message.user
+      def initialize(text:, user:)
+        @text = text
+        @user = user
         @type = :chat_message
       end
 
