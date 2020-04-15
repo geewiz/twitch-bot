@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Twitch::Bot::MessageParser do
+RSpec.describe Twitch::Bot::MessageParser do
   context "when we receive a PRIVMSG message" do
     it "parses a chat message event" do
       irc_message = Twitch::Bot::IrcMessage.new(<<~RAW)
