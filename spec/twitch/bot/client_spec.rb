@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Twitch::Bot::Client do
+RSpec.describe Twitch::Bot::Client do
   let!(:client) do
     connection = Twitch::Bot::Connection.new(
       nickname: "test", password: "test",

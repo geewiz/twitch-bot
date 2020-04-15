@@ -30,7 +30,7 @@ module Twitch
         if parser
           parser.new(irc_message).call
         else
-          NotSupportedMessage.new(irc_message)
+          Message::NotSupported.new(irc_message)
         end
       end
     end
@@ -47,43 +47,53 @@ module Twitch
     # Parses a PING IRC command
     class PingCommandParser < CommandParser
       def call
-        PingMessage.new(message)
+        Message::Ping.new(hostname: message.params.last)
       end
     end
 
     # Parses a PRIVMSG IRC command
     class PrivMsgCommandParser < CommandParser
       def call
-        if message.user == "twitchnotify"
-          if message.text.match?(/just subscribed!/)
-            SubscriptionMessage.new(message)
+        user = message.user
+        text = message.text
+        if user == "twitchnotify"
+          if text.match?(/just subscribed!/)
+            Message::Subscription.new(
+              user: message.params.last.split(" ").first,
+            )
           else
-            NotSupportedMessage.new(message)
+            Message::NotSupported.new(message)
           end
         else
-          ChatMessageMessage.new(message)
+          Message::UserMessage.new(text: text, user: user)
         end
       end
     end
 
     # Parses a MODE IRC command
     class ModeCommandParser < CommandParser
+      MODE_CHANGE = {
+        "-o" => :remove_moderator,
+        "+o" => :add_moderator,
+      }.freeze
+
       def call
-        ModeMessage.new(message)
+        params = message.params
+        Message::Mode.new(user: params.last, mode: MODE_CHANGE[params[1]])
       end
     end
 
     # Parses a 372 IRC status code/command.
     class AuthenticatedCommandParser < CommandParser
       def call
-        AuthenticatedMessage.new(message)
+        Message::Authenticated.new
       end
     end
 
     # Parses a 366 IRC status code/command.
     class JoinCommandParser < CommandParser
       def call
-        JoinMessage.new(message)
+        Message::Join.new
       end
     end
 
@@ -91,19 +101,54 @@ module Twitch
     class RoomStateCommandParser < CommandParser
       def call
         roomstate_tags = {
-          "slow" => SlowModeMessage,
-          "followers-only" => FollowersOnlyModeMessage,
-          "subs-only" => SubsOnlyModeMessage,
-          "r9k" => R9kModeMessage,
+          "slow" => SlowModeParser,
+          "followers-only" => FollowersOnlyModeParser,
+          "subs-only" => SubsOnlyModeParser,
+          "r9k" => R9kModeParser,
         }
 
-        roomstate_tags.each do |tag, event|
+        roomstate_tags.each do |tag, parser|
           if message.tags.include?(tag)
-            return event.new(message)
+            return parser.new(message).call
           end
         end
 
-        NotSupportedMessage.new(message)
+        Message::NotSupported.new(message)
+      end
+    end
+
+    class SlowModeParser < CommandParser
+      def call
+        Message::SlowMode.new(
+          status: message.tags["slow"],
+          channel: message.channel,
+        )
+      end
+    end
+
+    class FollowersOnlyModeParser < CommandParser
+      def call
+        Message::FollowersOnlyMode.new(
+          status: message.tags["followers-only"],
+        )
+      end
+    end
+
+    class SubsOnlyModeParser < CommandParser
+      def call
+        Message::SubsOnlyMode.new(
+          status: message.tags["subs-only"],
+          channel: message.channel,
+        )
+      end
+    end
+
+    class R9kModeParser < CommandParser
+      def call
+        Message::R9kMode.new(
+          status: message.tags["r9k"],
+          channel: message.channel,
+        )
       end
     end
 
@@ -111,9 +156,9 @@ module Twitch
     class NoticeCommandParser < CommandParser
       def call
         if message.params.last.match?(/Login authentication failed/)
-          LoginFailedMessage.new(message)
+          Message::LoginFailed.new(user: message.user)
         else
-          NotSupportedMessage.new(message)
+          Message::NotSupported.new(message)
         end
       end
     end

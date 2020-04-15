@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-describe Twitch::Bot::MessageParser do
+RSpec.describe Twitch::Bot::MessageParser do
   context "when we receive a PRIVMSG message" do
     it "parses a chat message event" do
       irc_message = Twitch::Bot::IrcMessage.new(<<~RAW)
@@ -9,7 +9,7 @@ describe Twitch::Bot::MessageParser do
 
       event = described_class.new(irc_message).message
 
-      expect(event.type).to eq :chat_message
+      expect(event.type).to eq :user_message
       expect(event.text).to eq "BibleThump"
       expect(event.user).to eq "enotpoloskun"
     end
@@ -115,7 +115,6 @@ describe Twitch::Bot::MessageParser do
 
     event = described_class.new(irc_message).message
 
-    expect(event.user).to eq nil
     expect(event.type).to eq :ping
     expect(event.hostname).to eq host
   end
