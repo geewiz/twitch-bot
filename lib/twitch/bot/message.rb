@@ -65,35 +65,6 @@ module Twitch
         end
       end
 
-      # This class stores the details of a ChatMessage event.
-      class UserMessage < Base
-        attr_reader :text, :user
-
-        def initialize(text:, user:)
-          @text = text
-          @user = user
-          @type = :user_message
-        end
-
-        def bot_command?(check_command)
-          command == check_command
-        end
-
-        def command
-          command_parts.first.gsub(/^!/, "")
-        end
-
-        def command_args
-          command_parts.tap(&:shift)
-        end
-
-        private
-
-        def command_parts
-          text.split(/\s+/)
-        end
-      end
-
       # This class stores the details of a LoginFailed event.
       class LoginFailed < Base
         attr_reader :user
@@ -153,3 +124,5 @@ module Twitch
     end
   end
 end
+
+require_relative "message/user_message"
