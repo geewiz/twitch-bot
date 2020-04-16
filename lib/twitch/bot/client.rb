@@ -100,7 +100,7 @@ module Twitch
         connect
         input_thread.join
         messages_thread.join
-        logger.debug "Joined"
+        logger.info "Client ended."
       end
 
       def join(channel)
@@ -185,9 +185,7 @@ module Twitch
       def start_input_thread
         @input_thread = Thread.start do
           while running
-            line = read_socket
-            logger.debug "> #{line}"
-            irc_message = IrcMessage.new(line)
+            irc_message = IrcMessage.new(read_socket)
             trigger(Twitch::Bot::MessageParser.new(irc_message).message)
           end
 
@@ -202,6 +200,7 @@ module Twitch
         while line.empty?
           line = socket.gets&.chomp
         end
+        logger.debug "> #{line}"
         line
       end
 
