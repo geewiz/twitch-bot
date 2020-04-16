@@ -75,9 +75,9 @@ module Twitch
         register_default_handlers
       end
 
-      def trigger(event)
+      def dispatch(event)
         type = event.type
-        logger.debug "Triggered #{type}"
+        logger.debug "Dispatched #{type}"
         (event_handlers[type] || []).each do |handler_class|
           logger.debug "Calling #{handler_class}..."
           handler_class.new(event: event, client: self).call
@@ -87,6 +87,7 @@ module Twitch
       def register_handler(handler)
         handler.handled_events.each do |event_type|
           (event_handlers[event_type] ||= []) << handler
+          logger.debug "Registered #{handler} for #{event_type}"
         end
       end
 
@@ -131,7 +132,7 @@ module Twitch
       end
 
       def stop
-        trigger StopEvent.new
+        dispatch StopEvent.new
         @running = false
         part if @channel
       end
@@ -142,7 +143,19 @@ module Twitch
         end
         logger.debug "< #{log_data}"
 
-        socket.puts(data)
+        if development_mode?
+          send_data_to_terminal(data)
+        else
+          send_data_to_socket(data)
+        end
+      end
+
+      def send_data_to_socket(data)
+        socket.puts("PRIVMSG ##{@channel.name} :#{data}")
+      end
+
+      def send_data_to_terminal(data)
+        puts "> #{data}"
       end
 
       def join_default_channel
@@ -185,13 +198,35 @@ module Twitch
       def start_input_thread
         @input_thread = Thread.start do
           while running
-            irc_message = IrcMessage.new(read_socket)
-            trigger(Twitch::Bot::MessageParser.new(irc_message).message)
+            event = if development_mode?
+                      read_message_from_terminal
+                    else
+                      read_message_from_socket
+                    end
+            dispatch(event)
           end
 
           logger.debug "End of input thread"
           socket.close
         end
+      end
+
+      def read_message_from_socket
+        irc_message = IrcMessage.new(read_socket)
+        Twitch::Bot::MessageParser.new(irc_message).message
+      end
+
+      def read_message_from_terminal
+        puts "Your command?"
+        input = gets
+        Twitch::Bot::Message::UserMessage.new(
+          text: input,
+          user: "tester",
+        )
+      end
+
+      def development_mode?
+        ENV["BOT_MODE"] == "development"
       end
 
       # Acceptable :reek:NilCheck
@@ -209,9 +244,8 @@ module Twitch
           while running
             sleep message_delay
 
-            # TODO: Replace with core Queue
             if (message = @messages_queue.pop)
-              send_data "PRIVMSG ##{@channel.name} :#{message}"
+              send_data message
             end
           end
 

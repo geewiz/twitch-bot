@@ -14,7 +14,7 @@ RSpec.describe Twitch::Bot::Client do
       message = ping_message_fake.new(:ping, "test.twitch", nil)
       allow(client).to receive(:send_data)
 
-      client.trigger(message)
+      client.dispatch(message)
 
       expect(client).to have_received(:send_data)
     end
@@ -24,7 +24,7 @@ RSpec.describe Twitch::Bot::Client do
       message = fake_message_class.new(:authenticated)
       allow(client).to receive(:join_default_channel)
 
-      client.trigger(message)
+      client.dispatch(message)
 
       expect(client).to have_received(:join_default_channel)
     end
@@ -34,7 +34,7 @@ RSpec.describe Twitch::Bot::Client do
       message = fake_message_class.new(:mode, "Test", :add_moderator)
       allow(client).to receive(:add_moderator)
 
-      client.trigger(message)
+      client.dispatch(message)
 
       expect(client).to have_received(:add_moderator)
     end
@@ -44,7 +44,7 @@ RSpec.describe Twitch::Bot::Client do
       message = fake_message_class.new(:mode, "Test", :remove_moderator)
       allow(client).to receive(:remove_moderator)
 
-      client.trigger(message)
+      client.dispatch(message)
 
       expect(client).to have_received(:remove_moderator)
     end
