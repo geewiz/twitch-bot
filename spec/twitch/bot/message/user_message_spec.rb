@@ -25,7 +25,6 @@ RSpec.describe Twitch::Bot::Message::UserMessage do
       user: "tester",
     )
 
-    binding.pry
     expect(message.command?).to be false
   end
 
