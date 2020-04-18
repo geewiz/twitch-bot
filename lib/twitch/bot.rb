@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require "bundler/setup"
+Bundler.require(:default)
+
 require_relative "bot/version"
 require_relative "bot/logger"
 require_relative "bot/event"

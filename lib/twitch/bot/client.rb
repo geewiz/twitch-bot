@@ -78,6 +78,14 @@ module Twitch
         messages_queue << message if messages_queue.last != message
       end
 
+      def add_moderator(user)
+        channel.add_moderator(user)
+      end
+
+      def remove_moderator(user)
+        channel.remove_moderator(user)
+      end
+
       def stop
         dispatch StopEvent.new
         stop_event_loop
@@ -150,14 +158,6 @@ module Twitch
 
       def development_mode?
         ENV["BOT_MODE"] == "development"
-      end
-
-      def add_moderator(user)
-        channel.add_moderator(user)
-      end
-
-      def remove_moderator(user)
-        channel.remove_moderator(user)
       end
 
       def execute_initialize_block(block)

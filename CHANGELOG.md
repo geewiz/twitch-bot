@@ -1,5 +1,14 @@
 # Changelog Twitch::Bot
 
+## v2.1.1
+
+* [FIXED] Fix a few bugs missed by not running tests. We need CI...
+
+## v2.1.0
+
+* [NEW] Local development mode
+* [CHANGED] Substantial refactoring introducing protocol Adapter classes and a central Logger class
+
 ## v2.0.0
 
 * [BREAKING] The standard text message class is now named

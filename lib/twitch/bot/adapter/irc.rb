@@ -75,6 +75,7 @@ module Twitch
 
         # Acceptable :reek:NilCheck
         def socket_read_next
+          line = ""
           loop do
             line = socket.gets&.chomp
             break unless line.nil? || line.empty?

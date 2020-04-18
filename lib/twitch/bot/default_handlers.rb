@@ -37,6 +37,10 @@ module Twitch
             client.remove_moderator(user)
           end
         end
+
+        def self.handled_events
+          [:mode]
+        end
       end
     end
   end
