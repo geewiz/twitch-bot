@@ -22,7 +22,7 @@ module Twitch
         end
 
         def command
-          first_word.match(/^!(\w+)/) do |match|
+          first_word&.match(/^!(\w+)/) do |match|
             match.captures&.first
           end
         end

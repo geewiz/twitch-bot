@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "logger"
-require "socket"
 
 Thread.abort_on_exception = true
 
@@ -9,49 +8,6 @@ module Twitch
   module Bot
     # Twitch chat client object
     class Client
-      MODERATOR_MESSAGES_COUNT = 100
-      USER_MESSAGES_COUNT = 20
-      TWITCH_PERIOD = 30.0
-
-      # Respond to a :ping event with a pong so we don't get disconnected.
-      class PingHandler < Twitch::Bot::EventHandler
-        def call
-          client.send_data "PONG :#{event.hostname}"
-        end
-
-        def self.handled_events
-          [:ping]
-        end
-      end
-
-      # Handle the :authenticated event required for joining our channel.
-      class AuthenticatedHandler < Twitch::Bot::EventHandler
-        def call
-          client.join_default_channel
-        end
-
-        def self.handled_events
-          [:authenticated]
-        end
-      end
-
-      # Handle a change in moderators on the channel.
-      class ModeHandler < Twitch::Bot::EventHandler
-        def call
-          user = event.user
-          case event.mode
-          when :add_moderator
-            client.add_moderator(user)
-          when :remove_moderator
-            client.remove_moderator(user)
-          end
-        end
-
-        def self.handled_events
-          [:mode]
-        end
-      end
-
       # Represent the event triggered when quitting the client loop.
       class StopEvent < Twitch::Bot::Event
         def initialize
@@ -59,94 +15,141 @@ module Twitch
         end
       end
 
+      MODERATOR_MESSAGES_COUNT = 100
+      USER_MESSAGES_COUNT = 20
+      TWITCH_PERIOD = 30.0
+
       attr_reader :connection
 
       def initialize(
-        connection:, output: STDOUT, channel: nil, &block
+        connection:, channel: nil, &block
       )
         @connection = connection
-        @logger = Logger.new(output)
         @channel = Twitch::Bot::Channel.new(channel) if channel
         @messages_queue = []
-        @running = false
         @event_handlers = {}
+        @event_loop_running = false
+
+        create_adapter
 
         execute_initialize_block block if block
         register_default_handlers
       end
 
-      def trigger(event)
-        type = event.type
-        logger.debug "Triggered #{type}"
-        (event_handlers[type] || []).each do |handler_class|
-          logger.debug "Calling #{handler_class}..."
-          handler_class.new(event: event, client: self).call
-        end
-      end
-
       def register_handler(handler)
         handler.handled_events.each do |event_type|
           (event_handlers[event_type] ||= []) << handler
+          Twitch::Bot::Logger.debug "Registered #{handler} for #{event_type}"
         end
       end
 
       def run
-        raise "Already running" if running
+        startup
 
-        @running = true
-
-        %w[TERM INT].each { |signal| trap(signal) { stop } }
-
-        connect
+        # Wait for threads to finish
         input_thread.join
-        messages_thread.join
-        logger.info "Client ended."
+        output_thread.join
       end
 
-      def join(channel)
-        @channel = Channel.new(channel)
-        send_data "JOIN ##{@channel.name}"
+      def join_default_channel
+        adapter.join_channel(@channel) if @channel
       end
 
-      def part
-        send_data "PART ##{@channel.name}"
+      def part_channel
+        adapter.part_channel
         @channel = nil
         @messages_queue = []
       end
 
-      def send_message(message)
-        @messages_queue << message if @messages_queue.last != message
-      end
-
-      def max_messages_count
-        if @channel.moderators.include?(connection.nickname)
-          MODERATOR_MESSAGES_COUNT
-        else
-          USER_MESSAGES_COUNT
+      def dispatch(event)
+        type = event.type
+        Twitch::Bot::Logger.debug "Dispatching #{type}..."
+        (event_handlers[type] || []).each do |handler_class|
+          Twitch::Bot::Logger.debug "Calling #{handler_class}..."
+          handler_class.new(event: event, client: self).call
         end
-      end
-
-      def message_delay
-        TWITCH_PERIOD / max_messages_count
-      end
-
-      def stop
-        trigger StopEvent.new
-        @running = false
-        part if @channel
       end
 
       def send_data(data)
-        log_data = data.gsub(/(PASS oauth:)(\w+)/) do
-          "#{Regexp.last_match(1)}#{'*' * Regexp.last_match(2).size}"
-        end
-        logger.debug "< #{log_data}"
-
-        socket.puts(data)
+        adapter.send_data(data)
       end
 
-      def join_default_channel
-        join @channel.name if @channel
+      def send_message(message)
+        messages_queue << message if messages_queue.last != message
+      end
+
+      def stop
+        dispatch StopEvent.new
+        stop_event_loop
+        part_channel if channel
+      end
+
+      private
+
+      attr_reader :adapter, :event_handlers, :event_loop_running,
+                  :input_thread, :output_thread, :channel, :messages_queue
+
+      def create_adapter
+        adapter_class = if development_mode?
+                          Twitch::Bot::Adapter::Terminal
+                        else
+                          Twitch::Bot::Adapter::Irc
+                        end
+        @adapter = adapter_class.new(client: self)
+      end
+
+      def startup
+        set_traps
+        start_event_loop
+        start_input_thread
+        start_output_thread
+        adapter.connect
+        Twitch::Bot::Logger.debug "Started."
+      end
+
+      def set_traps
+        %w[TERM INT].each { |signal| trap(signal) { stop } }
+      end
+
+      def start_event_loop
+        raise "Already running" if event_loop_running?
+
+        @event_loop_running = true
+      end
+
+      def stop_event_loop
+        @event_loop_running = false
+      end
+
+      def event_loop_running?
+        @event_loop_running
+      end
+
+      def start_input_thread
+        Twitch::Bot::Logger.debug("Starting input thread...")
+        @input_thread = Thread.start do
+          while event_loop_running?
+            event = adapter.read_data
+            dispatch(event)
+          end
+        end
+      end
+
+      def start_output_thread
+        Twitch::Bot::Logger.debug("Starting output thread...")
+        @output_thread = Thread.start do
+          while event_loop_running?
+            sleep message_delay
+
+            if (message = messages_queue.pop)
+              adapter.send_message(message)
+            end
+          end
+        end
+      end
+
+      def development_mode?
+        ENV["BOT_MODE"] == "development"
       end
 
       def add_moderator(user)
@@ -155,68 +158,6 @@ module Twitch
 
       def remove_moderator(user)
         channel.remove_moderator(user)
-      end
-
-      private
-
-      attr_reader :event_handlers, :running, :input_thread, :messages_thread,
-                  :socket, :logger
-
-      def connect
-        @socket = ::TCPSocket.new(connection.hostname, connection.port)
-
-        start_input_thread
-        start_messages_thread
-        enable_twitch_capabilities
-        authenticate
-      end
-
-      def enable_twitch_capabilities
-        send_data <<~DATA
-          CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership
-        DATA
-      end
-
-      def authenticate
-        send_data "PASS #{connection.password}"
-        send_data "NICK #{connection.nickname}"
-      end
-
-      def start_input_thread
-        @input_thread = Thread.start do
-          while running
-            irc_message = IrcMessage.new(read_socket)
-            trigger(Twitch::Bot::MessageParser.new(irc_message).message)
-          end
-
-          logger.debug "End of input thread"
-          socket.close
-        end
-      end
-
-      # Acceptable :reek:NilCheck
-      def read_socket
-        line = ""
-        while line.empty?
-          line = socket.gets&.chomp
-        end
-        logger.debug "> #{line}"
-        line
-      end
-
-      def start_messages_thread
-        @messages_thread = Thread.start do
-          while running
-            sleep message_delay
-
-            # TODO: Replace with core Queue
-            if (message = @messages_queue.pop)
-              send_data "PRIVMSG ##{@channel.name} :#{message}"
-            end
-          end
-
-          logger.debug "End of messages thread"
-        end
       end
 
       def execute_initialize_block(block)
@@ -231,6 +172,18 @@ module Twitch
         register_handler(Twitch::Bot::Client::PingHandler)
         register_handler(Twitch::Bot::Client::AuthenticatedHandler)
         register_handler(Twitch::Bot::Client::ModeHandler)
+      end
+
+      def max_messages_count
+        if channel.moderators.include?(connection.nickname)
+          MODERATOR_MESSAGES_COUNT
+        else
+          USER_MESSAGES_COUNT
+        end
+      end
+
+      def message_delay
+        TWITCH_PERIOD / max_messages_count
       end
     end
   end
