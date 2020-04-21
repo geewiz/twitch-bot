@@ -22,7 +22,7 @@ module Twitch
       attr_reader :connection, :channel
 
       def initialize(
-        connection:, channel: nil, &block
+        connection:, channel: nil, adapter_class: Adapter::Irc, &block
       )
         @connection = connection
         @channel = Twitch::Bot::Channel.new(channel) if channel
@@ -30,7 +30,7 @@ module Twitch
         @event_handlers = {}
         @event_loop_running = false
 
-        create_adapter
+        @adapter = adapter_class.new(client: self)
 
         execute_initialize_block block if block
         register_default_handlers
@@ -97,15 +97,6 @@ module Twitch
       attr_reader :adapter, :event_handlers, :event_loop_running,
                   :input_thread, :output_thread, :messages_queue
 
-      def create_adapter
-        adapter_class = if development_mode?
-                          Twitch::Bot::Adapter::Terminal
-                        else
-                          Twitch::Bot::Adapter::Irc
-                        end
-        @adapter = adapter_class.new(client: self)
-      end
-
       def startup
         set_traps
         start_event_loop
@@ -154,10 +145,6 @@ module Twitch
             end
           end
         end
-      end
-
-      def development_mode?
-        ENV["BOT_MODE"] == "development"
       end
 
       def execute_initialize_block(block)
