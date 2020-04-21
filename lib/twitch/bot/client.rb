@@ -19,7 +19,7 @@ module Twitch
       USER_MESSAGES_COUNT = 20
       TWITCH_PERIOD = 30.0
 
-      attr_reader :connection
+      attr_reader :connection, :channel
 
       def initialize(
         connection:, channel: nil, &block
@@ -95,7 +95,7 @@ module Twitch
       private
 
       attr_reader :adapter, :event_handlers, :event_loop_running,
-                  :input_thread, :output_thread, :channel, :messages_queue
+                  :input_thread, :output_thread, :messages_queue
 
       def create_adapter
         adapter_class = if development_mode?
