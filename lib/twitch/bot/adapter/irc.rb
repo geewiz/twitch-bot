@@ -52,10 +52,9 @@ module Twitch
         attr_reader :socket, :client, :channel
 
         def open_socket
-          connection = client.connection
           @socket = ::TCPSocket.new(
-            connection.hostname,
-            connection.port,
+            client.config.setting("irc_hostname") || "irc.chat.twitch.tv",
+            client.config.setting("irc_port") || 6667,
           )
 
           Twitch::Bot::Logger.debug "Socket open"
@@ -95,9 +94,9 @@ module Twitch
         end
 
         def authenticate
-          connection = client.connection
-          send_data "PASS #{connection.password}"
-          send_data "NICK #{connection.nickname}"
+          config = client.config
+          send_data "PASS #{config.setting('irc_password')}"
+          send_data "NICK #{config.setting('irc_nickname')}"
         end
 
         def sanitize_data(data)
