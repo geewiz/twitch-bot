@@ -3,9 +3,13 @@
 RSpec.describe Twitch::Bot::Client do
   let!(:client) do
     connection = Twitch::Bot::Connection.new(
-      nickname: "test", password: "test",
+      nickname: "testuser",
+      password: "test",
     )
-    described_class.new(connection: connection)
+    described_class.new(
+      connection: connection,
+      channel: "testchannel",
+    )
   end
 
   describe "#trigger" do
@@ -47,6 +51,14 @@ RSpec.describe Twitch::Bot::Client do
       client.dispatch(message)
 
       expect(client).to have_received(:remove_moderator)
+    end
+  end
+
+  describe "#channel" do
+    it "returns the channel object" do
+      channel = client.channel
+
+      expect(channel.name).to eq "testchannel"
     end
   end
 end
