@@ -19,18 +19,25 @@ module Twitch
       USER_MESSAGES_COUNT = 20
       TWITCH_PERIOD = 30.0
 
-      attr_reader :connection, :channel
+      attr_reader :channel, :config
 
       def initialize(
-        connection:, channel: nil, adapter_class: Adapter::Irc, &block
+        channel: nil, config:, &block
       )
-        @connection = connection
         @channel = Twitch::Bot::Channel.new(channel) if channel
         @messages_queue = []
         @event_handlers = {}
         @event_loop_running = false
 
-        @adapter = adapter_class.new(client: self)
+        @config = config
+
+        Twitch::Bot::Logger.output =
+          config.setting(:log_file) || "twitchbot.log"
+        Twitch::Bot::Logger.level =
+          (config.setting(:log_level) || "info").to_sym
+
+        adapter_class = config.setting("adapter") || "Twitch::Bot::Adapter::Irc"
+        @adapter = Object.const_get(adapter_class).new(client: self)
 
         execute_initialize_block block if block
         register_default_handlers
@@ -162,7 +169,7 @@ module Twitch
       end
 
       def max_messages_count
-        if channel.moderators.include?(connection.nickname)
+        if channel.moderators.include?(config.setting("botname"))
           MODERATOR_MESSAGES_COUNT
         else
           USER_MESSAGES_COUNT

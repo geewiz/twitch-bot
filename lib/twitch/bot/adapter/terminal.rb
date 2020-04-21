@@ -5,9 +5,7 @@ module Twitch
     module Adapter
       # This adapter connects the chat client to the terminal
       class Terminal
-        def initialize(client:)
-          @client = client
-        end
+        def initialize(client:); end
 
         def connect; end
 
@@ -22,7 +20,7 @@ module Twitch
         end
 
         def send_data(data)
-          puts sanitize_data(data)
+          puts data
         end
 
         def join_channel(_channel); end
@@ -32,12 +30,6 @@ module Twitch
         private
 
         attr_reader :client
-
-        def sanitize_data(data)
-          data.gsub(/(PASS oauth:)(\w+)/) do
-            "#{Regexp.last_match(1)}#{'*' * Regexp.last_match(2).size}"
-          end
-        end
 
         def read_message_from_terminal
           Twitch::Bot::Logger.debug "Waiting for input..."

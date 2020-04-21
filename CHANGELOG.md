@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v3.0.0
+
+* [BREAKING] Instead of choosing and creating the `Adapter` in the `Client`, we now inject a `Config` class into `Client` that carries our choice of Adapter. This change also makes the `Connection` class obsolete; its information went into `Config` as well.
+
 ## v2.1.1
 
 * [FIXED] Fix a few bugs missed by not running tests. We need CI...

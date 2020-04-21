@@ -2,12 +2,14 @@
 
 RSpec.describe Twitch::Bot::Client do
   let!(:client) do
-    connection = Twitch::Bot::Connection.new(
-      nickname: "testuser",
-      password: "test",
+    config = Twitch::Bot::Config.new(
+      settings: {
+        bot_user: "testuser",
+        adapter: "Twitch::Bot::Adapter::Terminal",
+      },
     )
     described_class.new(
-      connection: connection,
+      config: config,
       channel: "testchannel",
     )
   end

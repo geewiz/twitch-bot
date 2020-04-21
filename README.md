@@ -26,57 +26,7 @@ $ gem install twitch-bot
 
 ## Usage
 
-```ruby
-require "twitch/bot"
-
-class JoinHandler < Twitch::Bot::EventHandler
-  def call
-    client.send_message "Hi guys!"
-  end
-
-  def self.handled_events
-    [:join]
-  end
-end
-
-class SubscriptionHandler < Twitch::Bot::EventHandler
-  def call
-    client.send_message "Hi #{event.user}, thank you for your subscription"
-  end
-
-  def self.handled_events
-    [:subscription]
-  end
-end
-
-class TimeCommandHandler < Twitch::Bot::EventHandler
-  def call
-    if event.bot_command?("time")
-      client.send_message "Current time: #{Time.now.utc}"
-    end
-  end
-
-  def self.handled_events
-    [:chat_message]
-  end
-end
-
-connection = Twitch::Bot::Connection.new(
-  nickname: "test",
-  password: "secret",
-)
-
-client = Twitch::Bot::Client.new(
-  connection: connection,
-  channel: "test",
-) do
-  register_handler(JoinHandler)
-  register_handler(SubscriptionHandler)
-  register_handler(TimeCommandHandler)
-end
-
-client.run
-```
+Refer to the [Teneggs](https://www.github.com/geewiz/teneggs) repository for an example bot implementation.
 
 ## Supported event types
 
