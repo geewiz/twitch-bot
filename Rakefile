@@ -1,5 +1,6 @@
 require "bundler/gem_tasks"
 
+task default: :test
 task test: %i[rubocop spec]
 
 begin
