@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v3.1.0
+
+* [NEW] Client provides a persistent memory in form of a key/value store.
+
 ## v3.0.0
 
 * [BREAKING] Instead of choosing and creating the `Adapter` in the `Client`, we now inject a `Config` class into `Client` that carries our choice of Adapter. This change also makes the `Connection` class obsolete; its information went into `Config` as well.

@@ -63,4 +63,12 @@ RSpec.describe Twitch::Bot::Client do
       expect(channel.name).to eq "testchannel"
     end
   end
+
+  describe "#memory" do
+    it "stores and retrieves data" do
+      client.memory.store("foo", "bar")
+
+      expect(client.memory.retrieve("foo")).to eq "bar"
+    end
+  end
 end
