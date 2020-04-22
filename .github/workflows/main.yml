@@ -20,7 +20,7 @@ jobs:
         bundle install --jobs 4 --retry 3
         bundle exec rake test
     - name: Publish to RubyGems
-      if: github.event_name == 'push' && github.ref == 'master'
+      if: startsWith(github.ref, 'refs/tags/v')
       run: |
         mkdir -p $HOME/.gem
         touch $HOME/.gem/credentials
