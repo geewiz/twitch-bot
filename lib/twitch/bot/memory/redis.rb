@@ -25,8 +25,11 @@ module Twitch
         attr_reader :client, :redis
 
         def connect_db
-          host = client.config.setting("redis_host") || "localhost"
-          port = client.config.setting("redis_port") || 6379
+          config = client.config
+          host = config.setting("redis_host") ||
+            ENV["REDIS_HOST"] || "localhost"
+          port = config.setting("redis_port") ||
+            ENV["REDIS_PORT"] || 6379
           ::Redis.new(host: host, port: port)
         end
       end
