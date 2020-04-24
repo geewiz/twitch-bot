@@ -14,10 +14,12 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
-    - name: Build and test
+    - name: Bundle
       run: |
         gem install bundler
         bundle install --jobs 4 --retry 3
+    - name: Build and test
+      run: |
         bundle exec rake test
 
   release:
@@ -30,6 +32,10 @@ jobs:
       uses: actions/setup-ruby@v1
       with:
         ruby-version: 2.6.x
+    - name: Bundle
+      run: |
+        gem install bundler
+        bundle install --jobs 4 --retry 3
     - name: Publish to RubyGems
       run: |
         mkdir -p $HOME/.gem
