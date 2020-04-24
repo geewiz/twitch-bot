@@ -1,5 +1,7 @@
 # Twitch::Bot
 
+![](https://github.com/geewiz/twitch-bot/workflows/Ruby%20Gem/badge.svg)
+
 `twitch-bot` provides a Twitch chat client object that can be used for building Twitch chat bots.
 
 This gem is based on [`twitch-chat`](https://github.com/EnotPoloskun/twitch-chat).
