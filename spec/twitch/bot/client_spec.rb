@@ -14,7 +14,7 @@ RSpec.describe Twitch::Bot::Client do
     )
   end
 
-  describe "#trigger" do
+  describe "#dispath" do
     it "responds to a Ping message" do
       ping_message_fake = Struct.new(:type, :hostname, :user)
       message = ping_message_fake.new(:ping, "test.twitch", nil)

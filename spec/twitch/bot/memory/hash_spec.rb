@@ -3,7 +3,7 @@
 RSpec.describe Twitch::Bot::Memory::Hash do
   describe "#store" do
     it "persists a value for a key" do
-      mem = described_class.new
+      mem = described_class.new(client: nil)
 
       mem.store("foo", "bar")
 
