@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v3.2.0
+
+* [NEW] This release introduces a `Memory::Redis` class that allows users to provide their bot with a persistent memory storage.
+
 ## v3.1.0
 
 * [NEW] Client provides a persistent memory in form of a key/value store.

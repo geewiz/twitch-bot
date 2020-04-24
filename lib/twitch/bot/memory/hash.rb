@@ -4,8 +4,10 @@ module Twitch
   module Bot
     # Manage a key/value store for our bot
     module Memory
+      # Implement an ephemeral memory using a Hash
       class Hash
-        def initialize
+        def initialize(client:)
+          @client = client
           @kvstore = {}
         end
 
@@ -19,7 +21,7 @@ module Twitch
 
         private
 
-        attr_reader :kvstore
+        attr_reader :client, :kvstore
       end
     end
   end

@@ -34,7 +34,7 @@ module Twitch
         setup_logging
 
         memory_class = config.setting("memory") || "Twitch::Bot::Memory::Hash"
-        @memory = Object.const_get(memory_class).new
+        @memory = Object.const_get(memory_class).new(client: self)
 
         adapter_class = config.setting("adapter") || "Twitch::Bot::Adapter::Irc"
         @adapter = Object.const_get(adapter_class).new(client: self)
