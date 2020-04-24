@@ -19,22 +19,22 @@ module Twitch
       USER_MESSAGES_COUNT = 20
       TWITCH_PERIOD = 30.0
 
-      attr_reader :channel, :config
+      attr_reader :channel, :config, :memory
 
       def initialize(
         channel: nil, config:, &block
       )
+        @config = config
         @channel = Twitch::Bot::Channel.new(channel) if channel
+
         @messages_queue = []
         @event_handlers = {}
         @event_loop_running = false
 
-        @config = config
+        setup_logging
 
-        Twitch::Bot::Logger.output =
-          config.setting(:log_file) || "twitchbot.log"
-        Twitch::Bot::Logger.level =
-          (config.setting(:log_level) || "info").to_sym
+        memory_class = config.setting("memory") || "Twitch::Bot::Memory::Hash"
+        @memory = Object.const_get(memory_class).new
 
         adapter_class = config.setting("adapter") || "Twitch::Bot::Adapter::Irc"
         @adapter = Object.const_get(adapter_class).new(client: self)
@@ -43,6 +43,11 @@ module Twitch
         register_default_handlers
       end
 
+      #
+      # Register an event handler for specific event types
+      #
+      # @param [<EventHandler>] handler EventHandler class to register
+      #
       def register_handler(handler)
         handler.handled_events.each do |event_type|
           (event_handlers[event_type] ||= []) << handler
@@ -103,6 +108,13 @@ module Twitch
 
       attr_reader :adapter, :event_handlers, :event_loop_running,
                   :input_thread, :output_thread, :messages_queue
+
+      def setup_logging
+        Twitch::Bot::Logger.output =
+          config.setting(:log_file) || "twitchbot.log"
+        Twitch::Bot::Logger.level =
+          (config.setting(:log_level) || "info").to_sym
+      end
 
       def startup
         set_traps

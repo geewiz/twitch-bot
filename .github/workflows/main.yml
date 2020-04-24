@@ -5,7 +5,7 @@ on:
   - pull_request
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,18 @@ jobs:
         gem install bundler
         bundle install --jobs 4 --retry 3
         bundle exec rake test
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.6.x
     - name: Publish to RubyGems
-      if: startsWith(github.ref, 'refs/tags/v')
       run: |
         mkdir -p $HOME/.gem
         touch $HOME/.gem/credentials
