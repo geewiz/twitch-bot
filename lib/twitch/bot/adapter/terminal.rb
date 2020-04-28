@@ -5,7 +5,9 @@ module Twitch
     module Adapter
       # This adapter connects the chat client to the terminal
       class Terminal
-        def initialize(client:); end
+        def initialize(client:)
+          @client = client
+        end
 
         def connect; end
 
@@ -33,11 +35,15 @@ module Twitch
 
         def read_message_from_terminal
           Twitch::Bot::Logger.debug "Waiting for input..."
-          input = gets
+          input = read_terminal
           Twitch::Bot::Message::UserMessage.new(
             text: input,
-            user: "tester",
+            user: client.channel.name,
           )
+        end
+
+        def read_terminal
+          gets
         end
       end
     end

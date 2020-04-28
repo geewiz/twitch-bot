@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v3.2.1
+
+* [FIXED] The Terminal adapter now returns all messages from the channel owner, allowing to test privileged functionality in dev mode.
+
 ## v3.2.0
 
 * [NEW] This release introduces a `Memory::Redis` class that allows users to provide their bot with a persistent memory storage.
