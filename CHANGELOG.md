@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v4.0.0
+
+* [BREAKING] Using `REDIS_HOST` and `REDIS_PORT` for the connection details in `Twitch::Bot::Memory::Redis` was a bad choice. Providers like Heroku use a combined `REDIS_URL` instead. So do we now. (Alternatively, there's still the way via the `Config` object.)
+
 ## v3.2.1
 
 * [FIXED] The Terminal adapter now returns all messages from the channel owner, allowing to test privileged functionality in dev mode.

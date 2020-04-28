@@ -3,6 +3,8 @@
 require "bundler/setup"
 require "rspec/core"
 require "pry-byebug"
+require "dotenv"
+
 require_relative "../lib/twitch/bot"
 
 RSpec.configure do |config|
