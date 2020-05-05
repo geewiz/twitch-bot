@@ -4,6 +4,10 @@ module Twitch
   module Bot
     # Base class for implementing chat commands
     class CommandHandler < EventHandler
+      def self.handled_events
+        [:user_message]
+      end
+
       def initialize(event:, client:)
         super
         @command_aliases = []

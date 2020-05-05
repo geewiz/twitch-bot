@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe Twitch::Bot::CommandHandler do
+  it "responds to user_message" do
+    expect(described_class.handled_events).to include(:user_message)
+  end
+
   it "responds to a known command" do
     config = Twitch::Bot::Config.new
     client = Twitch::Bot::Client.new(config: config)

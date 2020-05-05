@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v4.1.1
+
+- [NEW] `CommandHandler` by default responds to `:user_message` events.
+
 ## v4.1.0
 
 * [NEW] New `CommandHandler` class that simplifies building chat commands.
