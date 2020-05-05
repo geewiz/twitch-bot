@@ -6,6 +6,21 @@ module Twitch
     class EventHandler
       attr_reader :event, :client
 
+      #
+      # Return a list of event types this handler subscribes to
+      #
+      # @return [Array] list of event types
+      #
+      def self.handled_events
+        []
+      end
+
+      #
+      # Inititalize an event handler object
+      #
+      # @parameter event The latest event of a subscribed type
+      # @parameter client The current chat client object
+      #
       def initialize(event:, client:)
         @event = event
         @client = client
@@ -18,15 +33,6 @@ module Twitch
       #
       def call
         raise "Unhandled #{event.type}"
-      end
-
-      #
-      # Return a list of event types this handler can handle
-      #
-      # @return [Array] event type list
-      #
-      def self.handled_events
-        []
       end
     end
   end
