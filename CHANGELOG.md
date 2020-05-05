@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v4.0.1
+
+* [FIXED] Fixed test crash due to incomplete DotEnv initialization.
+
 ## v4.0.0
 
 * [BREAKING] Using `REDIS_HOST` and `REDIS_PORT` for the connection details in `Twitch::Bot::Memory::Redis` was a bad choice. Providers like Heroku use a combined `REDIS_URL` instead. So do we now. (Alternatively, there's still the way via the `Config` object.)

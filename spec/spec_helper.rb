@@ -3,7 +3,9 @@
 require "bundler/setup"
 require "rspec/core"
 require "pry-byebug"
+
 require "dotenv"
+Dotenv.load(".env")
 
 require_relative "../lib/twitch/bot"
 

@@ -20,10 +20,7 @@ RSpec.describe Twitch::Bot::Memory::Redis do
     end
 
     it "works with config connection details" do
-      # Override environment variable
       url = URI.parse(ENV["REDIS_URL"])
-      ENV["REDIS_URL"] = nil
-
       config = Twitch::Bot::Config.new(
         settings: {
           bot_user: "testuser",
@@ -42,7 +39,6 @@ RSpec.describe Twitch::Bot::Memory::Redis do
       mem.store("foo", "bar")
 
       expect(mem.retrieve("foo")).to eq "bar"
-      ENV["REDIS_URL"] = url.to_s
     end
   end
 end
