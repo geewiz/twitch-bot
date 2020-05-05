@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v4.1.0
+
+* [NEW] New `CommandHandler` class that simplifies building chat commands.
+
 ## v4.0.1
 
 * [FIXED] Fixed test crash due to incomplete DotEnv initialization.
