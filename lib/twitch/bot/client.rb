@@ -11,7 +11,7 @@ module Twitch
       # Represent the event triggered when quitting the client loop.
       class StopEvent < Twitch::Bot::Event
         def initialize
-          @type = :stop
+          super(type: :stop)
         end
       end
 
@@ -22,7 +22,7 @@ module Twitch
       attr_reader :channel, :config, :memory
 
       def initialize(
-        channel: nil, config:, &block
+        config:, channel: nil, &block
       )
         @config = config
         @channel = Twitch::Bot::Channel.new(channel) if channel

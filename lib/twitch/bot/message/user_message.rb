@@ -10,7 +10,7 @@ module Twitch
         def initialize(text:, user:)
           @text = text
           @user = user
-          @type = :user_message
+          super(type: :user_message)
         end
 
         def command_name?(check_command)

@@ -5,8 +5,8 @@ module Twitch
     module Message
       # This class is the abstract base class for IRC events.
       class Base < Twitch::Bot::Event
-        def initialize(_message)
-          @type = :unknown
+        def initialize(type: :unknown)
+          super(type: type)
         end
       end
 
@@ -16,7 +16,7 @@ module Twitch
 
         def initialize(message)
           @message = message
-          @type = :not_supported
+          super(type: :not_supported)
         end
       end
 
@@ -26,7 +26,7 @@ module Twitch
 
         def initialize(hostname:)
           @hostname = hostname
-          @type = :ping
+          super(type: :ping)
         end
       end
 
@@ -37,21 +37,21 @@ module Twitch
         def initialize(user:, mode:)
           @user = user
           @mode = mode
-          @type = :mode
+          super(type: :mode)
         end
       end
 
       # This class stores the details of an Authenticated event.
       class Authenticated < Base
         def initialize
-          @type = :authenticated
+          super(type: :authenticated)
         end
       end
 
       # This class stores the details of a Join event.
       class Join < Base
         def initialize
-          @type = :join
+          super(type: :join)
         end
       end
 
@@ -61,7 +61,7 @@ module Twitch
 
         def initialize(user:)
           @user = user
-          @type = :subscription
+          super(type: :subscription)
         end
       end
 
@@ -71,7 +71,7 @@ module Twitch
 
         def initialize(user:)
           @user = user
-          @type = :login_failed
+          super(type: :login_failed)
         end
       end
 
@@ -82,7 +82,7 @@ module Twitch
         def initialize(status:, channel:)
           @status = status
           @channel = channel
-          @type = :slow_mode
+          super(type: :slow_mode)
         end
 
         def enabled?
@@ -96,7 +96,7 @@ module Twitch
 
         def initialize(status:)
           @status = status
-          @type = :followers_only_mode
+          super(type: :followers_only_mode)
         end
       end
 
@@ -107,7 +107,7 @@ module Twitch
         def initialize(status:, channel:)
           @status = status
           @channel = channel
-          @type = :subs_only_mode
+          super(type: :subs_only_mode)
         end
       end
 
@@ -118,7 +118,7 @@ module Twitch
         def initialize(status:, channel:)
           @status = status
           @channel = channel
-          @type = :r9k_mode
+          super(type: :r9k_mode)
         end
       end
     end
