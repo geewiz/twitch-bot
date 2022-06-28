@@ -9,6 +9,7 @@ module Twitch
       class Irc
         def initialize(client:)
           @client = client
+          @channel = nil
 
           open_socket
         end
@@ -29,7 +30,7 @@ module Twitch
         end
 
         def send_message(text)
-          privmsg = "PRIVMSG ##{channel.name} :#{text}"
+          privmsg = "PRIVMSG ##{@channel.name} :#{text}"
           send_data(privmsg)
         end
 
@@ -37,19 +38,19 @@ module Twitch
           send_data_to_socket(data)
         end
 
-        def join_channel(channel)
-          @channel = channel
-          send_data "JOIN ##{channel.name}"
+        def join_channel(channel_object)
+          @channel = channel_object
+          send_data "JOIN ##{@channel.name}"
         end
 
         def part_channel
-          send_data "PART ##{channel.name}"
+          send_data "PART ##{@channel.name}" if @channel
           @channel = nil
         end
 
         private
 
-        attr_reader :socket, :client, :channel
+        attr_reader :socket, :client
 
         def open_socket
           @socket = ::TCPSocket.new(

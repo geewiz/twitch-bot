@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v5.0.2
+
+- [FIX] `PART` command caused a crash when not in a channel.
+
 ## v5.0.1
 
 - [FIX] Environment variable `REDIS_URL` now has precedence over configuration 
