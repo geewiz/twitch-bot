@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "redis"
+require "json"
 
 module Twitch
   module Bot
@@ -13,11 +14,12 @@ module Twitch
         end
 
         def store(key, value)
-          redis.set(key, value)
+          redis.set(key, value.to_json)
         end
 
         def retrieve(key)
-          redis.get(key)
+          value = redis.get(key)
+          JSON.parse(value)
         end
 
         private
