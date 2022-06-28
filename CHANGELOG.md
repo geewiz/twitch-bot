@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v5.0.5
+
+- [FIX] Catch missing channel object.
+
 ## v5.0.4
 
 - [FIX] Handle `nil` values from Redis.
