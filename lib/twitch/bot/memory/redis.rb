@@ -19,7 +19,7 @@ module Twitch
 
         def retrieve(key)
           value = redis.get(key)
-          JSON.parse(value)
+          value.nil? ? nil : JSON.parse(value)
         end
 
         private

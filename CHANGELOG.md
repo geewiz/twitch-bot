@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v5.0.4
+
+- [FIX] Handle `nil` values from Redis.
+
 ## v5.0.3
 
 - [FIX] Remove CI release stage broken by Rubygems OTP.
