@@ -181,7 +181,7 @@ module Twitch
       end
 
       def max_messages_count
-        if channel&.moderators.include?(config.setting("botname"))
+        if channel&.moderators&.include?(config.setting("botname"))
           MODERATOR_MESSAGES_COUNT
         else
           USER_MESSAGES_COUNT

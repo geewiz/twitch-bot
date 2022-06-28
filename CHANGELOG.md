@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v5.0.6
+
+- [FIX] Use safe navigation properly.
+
 ## v5.0.5
 
 - [FIX] Catch missing channel object.
