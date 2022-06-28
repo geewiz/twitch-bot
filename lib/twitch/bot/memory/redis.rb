@@ -33,11 +33,9 @@ module Twitch
 
         def redis_config_url
           config = client.config
-          if config.setting("redis_host")
-            host = config.setting("redis_host") || "localhost"
-            port = config.setting("redis_port") || 6379
-            "redis://#{host}:#{port}"
-          end
+          host = config.setting("redis_host") || "localhost"
+          port = config.setting("redis_port") || 6379
+          "redis://#{host}:#{port}"
         end
       end
     end

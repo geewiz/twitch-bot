@@ -1,5 +1,10 @@
 # Changelog Twitch::Bot
 
+## v5.0.0
+
+- [BREAKING] Complex values like arrays and hashes get serialized as JSON before 
+  being stored in Redis.
+
 ## v4.1.1
 
 - [NEW] `CommandHandler` by default responds to `:user_message` events.
