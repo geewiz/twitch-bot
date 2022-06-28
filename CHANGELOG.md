@@ -1,5 +1,10 @@
 # Changelog Twitch::Bot
 
+## v5.0.1
+
+- [FIX] Environment variable `REDIS_URL` now has precedence over configuration 
+  object values.
+
 ## v5.0.0
 
 - [BREAKING] Complex values like arrays and hashes get serialized as JSON before 

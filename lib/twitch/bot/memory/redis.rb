@@ -27,7 +27,7 @@ module Twitch
         attr_reader :client, :redis
 
         def connect_db
-          url = redis_config_url || ENV["REDIS_URL"]
+          url = ENV["REDIS_URL"] || redis_config_url
           ::Redis.new(url: url)
         end
 
