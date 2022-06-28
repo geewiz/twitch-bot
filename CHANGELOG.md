@@ -1,5 +1,9 @@
 # Changelog Twitch::Bot
 
+## v5.0.3
+
+- [FIX] Remove CI release stage broken by Rubygems OTP.
+
 ## v5.0.2
 
 - [FIX] `PART` command caused a crash when not in a channel.
