@@ -8,24 +8,18 @@ module Twitch
         [:user_message]
       end
 
-      def initialize(event:, client:)
-        super
-        @command_aliases = []
+      def command_aliases
+        []
       end
 
+      # FIXME: Does this have to be public only for testing?
       def call
         if event.command? && command_aliases.include?(event.command)
           handle_command
         end
       end
 
-      def command_alias(command_alias)
-        @command_aliases << command_alias
-      end
-
       private
-
-      attr_reader :command_aliases
 
       def handle_command
         raise NotImplementedError

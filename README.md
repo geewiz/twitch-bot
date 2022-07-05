@@ -2,9 +2,11 @@
 
 ![](https://github.com/geewiz/twitch-bot/workflows/Ruby%20Gem/badge.svg)
 
-`twitch-bot` provides a Twitch chat client object that can be used for building Twitch chat bots.
+`twitch-bot` provides a Twitch chat client object that can be used for building 
+Twitch chat bots.
 
-This gem is based on [`twitch-chat`](https://github.com/EnotPoloskun/twitch-chat).
+This gem is based on 
+[`twitch-chat`](https://github.com/EnotPoloskun/twitch-chat).
 
 ## Installation
 
@@ -28,7 +30,8 @@ $ gem install twitch-bot
 
 ## Usage
 
-Refer to the [Teneggs](https://www.github.com/geewiz/teneggs) repository for an example bot implementation.
+Refer to the [Teneggs](https://www.github.com/geewiz/teneggs) repository for an 
+example bot implementation.
 
 ## Supported event types
 

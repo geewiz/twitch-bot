@@ -13,7 +13,7 @@ RSpec.describe Twitch::Bot::CommandHandler do
       user: "testuser",
     )
     handler = described_class.new(event: message, client: client)
-    handler.command_alias("mycommand")
+    allow(handler).to receive(:command_aliases).and_return(["mycommand"])
     allow(handler).to receive(:handle_command)
 
     handler.call
