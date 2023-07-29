@@ -33,6 +33,8 @@ module Twitch
 
         setup_logging
 
+        Twitch::Bot::Logger.debug "Starting up..."
+
         memory_class = config.setting("memory") || "Twitch::Bot::Memory::Hash"
         @memory = Object.const_get(memory_class).new(client: self)
 
@@ -111,7 +113,7 @@ module Twitch
 
       def setup_logging
         Twitch::Bot::Logger.output =
-          config.setting(:log_file) || "twitchbot.log"
+          config.setting(:log_file) || STDOUT
         Twitch::Bot::Logger.level =
           (config.setting(:log_level) || "info").to_sym
       end
@@ -178,6 +180,7 @@ module Twitch
         register_handler(Twitch::Bot::Client::PingHandler)
         register_handler(Twitch::Bot::Client::AuthenticatedHandler)
         register_handler(Twitch::Bot::Client::ModeHandler)
+        register_handler(Twitch::Bot::Client::LoginFailedHandler)
       end
 
       def max_messages_count

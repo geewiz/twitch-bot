@@ -26,12 +26,10 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "dotenv"
-  spec.add_development_dependency "freistil-rubocop"
   spec.add_development_dependency "pry-byebug", "~> 3.0"
   spec.add_development_dependency "rake", "~> 13.0"
   spec.add_development_dependency "reek"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "rubocop"
   spec.add_development_dependency "solargraph"
-  spec.add_development_dependency "terminal-notifier-guard"
 end

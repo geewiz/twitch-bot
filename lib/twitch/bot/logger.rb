@@ -12,6 +12,8 @@ module Twitch
       end
 
       def self.debug(entry)
+        # FIXME: Logger doesn't seem to be working properly
+        puts entry
         logger.debug entry
       end
 

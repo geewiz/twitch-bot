@@ -8,6 +8,8 @@ module Twitch
         attr_reader :text, :user
 
         def initialize(text:, user:)
+          Twitch::Bot::Logger.debug "Got message #{text} from user #{user}"
+
           @text = text
           @user = user
           super(type: :user_message)

@@ -42,6 +42,28 @@ module Twitch
           [:mode]
         end
       end
+
+      class LoginFailedHandler < Twitch::Bot::EventHandler
+        def call
+          client.stop
+          exit 1
+        end
+
+        def self.handled_events
+          [:login_failed]
+        end
+      end
+
+      class StopHandler < Twitch::Bot::EventHandler
+        def call
+          client.stop
+          exit 1
+        end
+
+        def self.handled_events
+          [:stop]
+        end
+      end
     end
   end
 end

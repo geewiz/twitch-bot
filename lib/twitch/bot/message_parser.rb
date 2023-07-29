@@ -155,7 +155,8 @@ module Twitch
     # Parses a NOTICE IRC command.
     class NoticeCommandParser < CommandParser
       def call
-        if message.params.last.match?(/Login authentication failed/)
+        if message.params.last.match?(/Login authentication failed/) ||
+          message.params.last.match?(/Login unsuccessful/)
           Message::LoginFailed.new(user: message.user)
         else
           Message::NotSupported.new(message)
